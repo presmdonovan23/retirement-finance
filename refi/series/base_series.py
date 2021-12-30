@@ -9,6 +9,10 @@ class BaseSeries:
         self.value = np.nan
         self.period = -1
 
+    def step_all(self):
+        while self.period < (self.num_periods - 1):
+            self.step()
+
     def step(self):
         if self.period == (self.num_periods - 1):
             raise IndexError('Final period {0} reached, cannot step further.'.format(self.period))

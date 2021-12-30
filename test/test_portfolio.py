@@ -1,6 +1,6 @@
 import unittest
 
-import refi.series as s
+import refi.series.base_series as s
 import refi.portfolio as pf
 import refi.constants
 

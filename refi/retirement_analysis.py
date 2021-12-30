@@ -1,9 +1,6 @@
-import numpy as np
-
-
 class RetirementAnalysis:
     
-    def __init__(self):
+    def __init__(self, initial_age, retirement_age, death_age, portfolio, deferral_scenario, consumption_scenario, inflation_scenario, ssb_scenario):
         # self.initial_balance = initial_balance
         # self.initial_cpi = initial_cpi
         self.initial_age = initial_age
@@ -15,26 +12,23 @@ class RetirementAnalysis:
         self.deferral_scenario = deferral_scenario
         self.consumption_scenario = consumption_scenario
         self.inflation_scenario = inflation_scenario
-
+        self.ssb_scenario = ssb_scenario
 
     def simulate(self):
         
         for age in range(self.initial_age, self.retirement_age):
-            deferral_amt = self._get_deferral()
-            target_consumption = self._get_target_consumption()
-            ssb = self._get_ssb()
-            withdrawal_amt = self._get_withdrawal()
+            self._step()
 
-            self.portfolio.step(deferral_amt=deferral_amt, withdrawal_amt=withdrawal_amt)
+    def _step(self):
+        self.inflation_scenario.step()
+        self.deferral_scenario.step()
+        self.consumption_scenario.step()
+        self.ssb_scenario.step()
 
-    def _get_target_consumption(self):
-        return self.consumption_scenario.tgt_consumption
+        deferral_amt = self.deferral_scenario.value
+        withdrawal_amt = self._get_withdrawal()
 
-    def _get_deferral(self):
-        return self.deferral_scenario.deferral
-
-    def _get_ssb(self):
-        return self.ssb_scenario.ssb
+        self.portfolio.step(deferral_amt=deferral_amt, withdrawal_amt=withdrawal_amt)
 
     def _get_withdrawal(self):
-        return self.consumption_scenario.value - self.ssb
+        return self.consumption_scenario.value - self.ssb_scenario.value
