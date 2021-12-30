@@ -10,7 +10,6 @@ class StaticRetirementConsumption(BaseSeries):
         self.cpi = cpi
         self.initial_age = initial_age
         self.retirement_age = retirement_age
-        self.cumulative_inflation = 0
 
     def get_next_value(self):
 
