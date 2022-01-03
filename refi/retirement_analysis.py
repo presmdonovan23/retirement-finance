@@ -34,7 +34,7 @@ class RetirementAnalysis:
 
     def simulate(self):
         
-        for age in range(self.initial_age, self.retirement_age):
+        for age in range(self.initial_age, self.death_age):
             self._step()
 
     def _step(self):

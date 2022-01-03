@@ -39,7 +39,8 @@ class Portfolio(BaseSeries):
 
             if withdrawal_amt > value:
                 raise ValueError('Withdrawal amounts ${0} exceeds balance (${1}).'.format(withdrawal_amt, self.value))
-            self._withdraw(amount=withdrawal_amt)
+
+            value -= withdrawal_amt
             #print('before grow: ', self.value)
             pf_return, asset_returns = self._grow()
             value *= (1 + pf_return)
@@ -65,14 +66,14 @@ class Portfolio(BaseSeries):
     #
     #     return historical_returns
 
-    def _deposit(self, amount):
-        self.value += amount
-
-    def _withdraw(self, amount):
-        if amount > self.value:
-            raise ValueError('Withdrawal amounts ${0} exceeds balance (${1}).'.format(amount, self.value))
-
-        self.value -= amount
+    # def _deposit(self, amount):
+    #     self.value += amount
+    #
+    # def _withdraw(self, amount):
+    #     if amount > self.value:
+    #         raise ValueError('Withdrawal amounts ${0} exceeds balance (${1}).'.format(amount, self.value))
+    #
+    #     self.value -= amount
 
     def _grow(self):
         for asset in self.assets:
