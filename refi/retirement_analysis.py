@@ -21,7 +21,7 @@ class RetirementAnalysis:
             raise ValueError('Cannot initialize RetirementAnalysis: deferral_scenario.period = {0}.'.format(self.deferral_scenario.period))
 
         if self.ssb_scenario.period != -1:
-            raise ValueError('Cannot initialize RetirementAnalysis: deferral_scenario.period = {0}.'.format(self.ssb_scenario.period))
+            raise ValueError('Cannot initialize RetirementAnalysis: ssb_scenario.period = {0}.'.format(self.ssb_scenario.period))
 
         if self.inflation_scenario.period != -1:
             raise ValueError('Cannot initialize RetirementAnalysis: inflation_scenario.period = {0}.'.format(self.inflation_scenario.period))
@@ -51,3 +51,10 @@ class RetirementAnalysis:
 
     def _get_withdrawal(self):
         return self.consumption_scenario.value - self.ssb_scenario.value
+
+    def plot(self):
+        self.inflation_scenario.plot(initial_age=self.initial_age, name='Inflation')
+        self.cpi_scenario.plot(initial_age=self.initial_age, name='CPI')
+        self.deferral_scenario.plot(initial_age=self.initial_age, name='Deferral')
+        self.consumption_scenario.plot(initial_age=self.initial_age, name='Consumption')
+        self.ssb_scenario.plot(initial_age=self.initial_age, name='SSB')

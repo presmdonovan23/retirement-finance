@@ -1,73 +1,90 @@
 import numpy as np
 
+from refi.series.base_series import BaseSeries
 
-class Portfolio:
 
-    def __init__(self, assets, glidepath, balance):
+class Portfolio(BaseSeries):
+
+    def __init__(self, assets, glidepath, initial_balance):
+        num_periods = len(glidepath)
+        super().__init__(num_periods)
+
+        self.initial_balance = initial_balance
         self.assets = np.array(assets)
         self.glidepath = glidepath
-        self._t = 0
-        self.allocations = np.array(self.glidepath[self._t])
-        self.balance = balance
+        # self._t = 0
+        self.allocations = np.array(self.glidepath[0])
+        self.total_returns = np.array([np.nan for _ in range(self.num_periods)])
+        # self.balance = balance
 
-        self.hist_balance = np.array([self.balance])
-        self.hist_allocations = np.array([self.allocations])
-        self.hist_pf_returns = np.array([])
-        self.hist_asset_returns = np.array([])
-        self.hist_deposits = np.array([])
-        self.hist_withdrawals = np.array([])
+        # self.history = dict({
+        #     'balance': np.array([self.balance]),
+        #     'allocations': np.array([self.allocations]),
+        #     'returns': np.array([]),
+        #     'deposits': np.array([]),
+        #     'withdrawals': np.array([])
+        # })
 
-    def step(self, deposit_amt=0, withdrawal_amt=0):
+    def get_next_value(self, deposit_amt=0, withdrawal_amt=0):
 
-        if withdrawal_amt > (self.balance + deposit_amt):
-            raise ValueError(
-                'Withdrawal amounts ${0} exceeds balance (${1}).'.format(withdrawal_amt, self.balance + deposit_amt))
+        if self.period == 0:
+            value = self.initial_balance
+        else:
+            if withdrawal_amt > (self.value + deposit_amt):
+                raise ValueError(
+                    'Withdrawal amounts ${0} exceeds balance (${1}).'.format(withdrawal_amt, self.value + deposit_amt))
 
-        self._deposit(amount=deposit_amt)
-        self._withdraw(amount=withdrawal_amt)
-        pf_return, asset_returns = self._grow()
+            value = self.value
+            value += deposit_amt
 
-        next_allocations = self.glidepath[self._t + 1]
-        self._update_asset_allocation(allocations=next_allocations)
+            if withdrawal_amt > value:
+                raise ValueError('Withdrawal amounts ${0} exceeds balance (${1}).'.format(withdrawal_amt, self.value))
+            self._withdraw(amount=withdrawal_amt)
+            #print('before grow: ', self.value)
+            pf_return, asset_returns = self._grow()
+            value *= (1 + pf_return)
+            #print('after grow', self.value)
+            next_allocations = self.glidepath[self.period]
+            self._update_asset_allocation(allocations=next_allocations)
 
-        self._update_history(deposit_amt, withdrawal_amt, pf_return, asset_returns)
+        return value
 
-        self._t += 1
+    # def get_total_return(self, period=None):
+    #     if period is None:
+    #         period = self.period
+    #
+    #     returns = np.array([asset.history[period - 1] for asset in self.assets])
+    #     total_return = (returns * self.glidepath[period-1]).sum()
+    #
+    #     return total_return
 
-    def print_history(self):
-        print('Historical balance:')
-        print(self.hist_balance)
-        print('Historical returns:')
-        print(self.hist_pf_returns)
-        print('Historical deposits:')
-        print(self.hist_deposits)
-        print('Historical withdrawals:')
-        print(self.hist_withdrawals)
-
-    def _update_history(self, deposit_amt, withdrawal_amt, pf_return, asset_returns):
-        self.hist_balance = np.append(self.hist_balance, self.balance)
-        self.hist_allocations = np.append(self.hist_allocations, self.allocations)
-        self.hist_pf_returns = np.append(self.hist_pf_returns, pf_return)
-        self.hist_asset_returns = np.append(self.hist_asset_returns, asset_returns)
-        self.hist_deposits = np.append(self.hist_deposits, deposit_amt)
-        self.hist_withdrawals = np.append(self.hist_withdrawals, withdrawal_amt)
+    # def get_historical_returns(self):
+    #     historical_returns = np.array([None for _ in range(self.period+1)])
+    #     for period in range(self.period):
+    #         historical_returns[period] = self.get_total_return(period=period)
+    #
+    #     return historical_returns
 
     def _deposit(self, amount):
-        self.balance += amount
+        self.value += amount
 
     def _withdraw(self, amount):
-        if amount > self.balance:
-            raise ValueError('Withdrawal amounts ${0} exceeds balance (${1}).'.format(amount, self.balance))
+        if amount > self.value:
+            raise ValueError('Withdrawal amounts ${0} exceeds balance (${1}).'.format(amount, self.value))
 
-        self.balance -= amount
+        self.value -= amount
 
     def _grow(self):
         for asset in self.assets:
             asset.step()
 
-        returns = np.array([asset.value for asset in self.assets])
+        returns = np.array([asset.history[self.period-1] for asset in self.assets])
         total_return = (returns * self.allocations).sum()
-        self.balance *= (1 + total_return)
+
+        self.total_returns[self.period-1] = total_return
+        #total_return = self.get_total_return(period=self.period)
+
+        #self.value *= (1 + total_return)
 
         return total_return, returns
 

@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class BaseSeries:
@@ -9,18 +10,31 @@ class BaseSeries:
         self.value = np.nan
         self.period = -1
 
+    def plot(self, initial_age=None, name=None):
+
+        xlabel = 'Period' if initial_age is None else 'Age'
+        #title = 'Value' if name is None else name
+
+        offset = 0 if initial_age is None else initial_age
+        x = np.array([period + offset for period in range(self.period + 1)])
+        plt.plot(x, self.history[:self.period + 1], '.-')
+        plt.xlabel(xlabel)
+        plt.title(name)
+        plt.xticks(x)
+        plt.show()
+
     def step_all(self):
         while self.period < (self.num_periods - 1):
             self.step()
 
-    def step(self):
+    def step(self, **kwargs):
         if self.period == (self.num_periods - 1):
             raise IndexError('Final period {0} reached, cannot step further.'.format(self.period))
 
         self.period += 1
 
         try:
-            self.value = self.get_next_value()
+            self.value = self.get_next_value(**kwargs)
         except BaseException as err:
             print(err)
             self.period -= 1
@@ -28,7 +42,7 @@ class BaseSeries:
 
         self._update_history()
 
-    def get_next_value(self):
+    def get_next_value(self, **kwargs):
         raise NotImplementedError
 
     def get_previous_value(self):
@@ -36,7 +50,6 @@ class BaseSeries:
 
     def _update_history(self):
         self.history[self.period] = self.value
-
 
 class StaticSeries(BaseSeries):
 
