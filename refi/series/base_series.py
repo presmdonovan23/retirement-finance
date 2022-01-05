@@ -13,14 +13,14 @@ class BaseSeries:
     def plot(self, initial_age=None, name=None):
 
         xlabel = 'Period' if initial_age is None else 'Age'
-        #title = 'Value' if name is None else name
 
         offset = 0 if initial_age is None else initial_age
         x = np.array([period + offset for period in range(self.period + 1)])
-        plt.plot(x, self.history[:self.period + 1], '.-')
-        plt.xlabel(xlabel)
-        plt.title(name)
-        plt.xticks(x)
+
+        fig, ax = plt.subplots(figsize=(8, 4))
+        ax.plot(x, self.history[:self.period + 1], '.-')
+        ax.set_xlabel(xlabel)
+        ax.set_title(name)
         plt.show()
 
     def step_all(self):
