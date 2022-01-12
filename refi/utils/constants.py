@@ -145,3 +145,24 @@ trp_glidepath = [
     [0.30, 0.630, 0.070],
     [0.30, 0.630, 0.070]
 ]
+
+geo_mean_inflation_rate = .0310
+inflation_rate_dist = {50: geo_mean_inflation_rate}
+
+equity_return_dist = {
+    50: 1.0717 * (1 + geo_mean_inflation_rate) - 1,
+    25: 1.0605 * (1 + geo_mean_inflation_rate) - 1,
+    10: 1.0481 * (1 + geo_mean_inflation_rate) - 1
+}
+
+bond_return_dist = {
+    50: 1.02125 * (1 + geo_mean_inflation_rate) - 1,
+    25: 1.00300 * (1 + geo_mean_inflation_rate) - 1,
+    10: 0.99750 * (1 + geo_mean_inflation_rate) - 1
+}
+
+cash_return_dist = {
+    50: 1.0075 * (1 + geo_mean_inflation_rate) - 1,
+    25: 0.9957 * (1 + geo_mean_inflation_rate) - 1,
+    10: 0.9889 * (1 + geo_mean_inflation_rate) - 1
+}

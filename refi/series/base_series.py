@@ -51,6 +51,7 @@ class BaseSeries:
     def _update_history(self):
         self.history[self.period] = self.value
 
+
 class StaticSeries(BaseSeries):
 
     def __init__(self, num_periods, static_value):
