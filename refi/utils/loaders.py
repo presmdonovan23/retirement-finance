@@ -1,5 +1,6 @@
 import refi.utils.constants as constants
 import refi.series.base_series as base_series
+import refi.portfolio as pf
 from refi.series.consumption import StaticRetirementConsumption
 from refi.series.ssb import StaticRetirementSSB
 from refi.series.deferral import StaticPreRetirementDeferral
@@ -31,3 +32,23 @@ def load_behavioral_series(initial_deferral, retirement_consumption, benefits_ag
     ssb = StaticRetirementSSB(retirement_ssb, cpi, initial_age, benefits_age)
 
     return deferral, consumption, ssb
+
+
+def load_ret_sim_inputs(initial_age, retirement_age, death_age, benefits_age, asset_return_pctile, initial_cpi, initial_deferral,
+                        initial_balance, retirement_consumption, retirement_ssb, glidepath):
+    num_years = death_age - initial_age + 1
+    equity, bond, cash = load_asset_series(num_years=num_years, pctile=asset_return_pctile)
+    assets = [equity, bond, cash]
+    portfolio = pf.Portfolio(assets=assets, glidepath=glidepath, initial_balance=initial_balance)
+
+    inflation, cpi = load_inflation_series(num_years, initial_cpi)
+    deferral, consumption, ssb = load_behavioral_series(
+        initial_deferral=initial_deferral,
+        retirement_consumption=retirement_consumption,
+        benefits_age=benefits_age,
+        retirement_ssb=retirement_ssb,
+        cpi=cpi,
+        initial_age=initial_age,
+        retirement_age=retirement_age)
+
+    return portfolio, deferral, consumption, inflation, cpi, ssb
