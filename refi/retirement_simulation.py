@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class RetirementAnalysis:
+class RetirementSimulation:
     
     def __init__(self, initial_age, retirement_age, death_age, portfolio, deferral_scenario, consumption_scenario, inflation_scenario, cpi_scenario, ssb_scenario):
 
@@ -22,24 +22,24 @@ class RetirementAnalysis:
         self._validate_initial_inputs()
 
     def _initialize_lifetime_array(self, default_value=np.nan):
-        a = np.array([default_value for _ in range(self.initial_age, self.death_age)])
-        return a
+        arr = np.array([default_value for _ in range(self.initial_age, self.death_age)])
+        return arr
 
     def _validate_initial_inputs(self):
         if self.deferral_scenario.period != -1:
-            raise ValueError('Cannot initialize RetirementAnalysis: deferral_scenario.period = {0}.'.format(self.deferral_scenario.period))
+            raise ValueError('Cannot initialize RetirementSimulation: deferral_scenario.period = {0}.'.format(self.deferral_scenario.period))
 
         if self.ssb_scenario.period != -1:
-            raise ValueError('Cannot initialize RetirementAnalysis: ssb_scenario.period = {0}.'.format(self.ssb_scenario.period))
+            raise ValueError('Cannot initialize RetirementSimulation: ssb_scenario.period = {0}.'.format(self.ssb_scenario.period))
 
         if self.inflation_scenario.period != -1:
-            raise ValueError('Cannot initialize RetirementAnalysis: inflation_scenario.period = {0}.'.format(self.inflation_scenario.period))
+            raise ValueError('Cannot initialize RetirementSimulation: inflation_scenario.period = {0}.'.format(self.inflation_scenario.period))
 
         if self.cpi_scenario.period != -1:
-            raise ValueError('Cannot initialize RetirementAnalysis: cpi_scenario.period = {0}.'.format(self.cpi_scenario.period))
+            raise ValueError('Cannot initialize RetirementSimulation: cpi_scenario.period = {0}.'.format(self.cpi_scenario.period))
 
         if self.target_consumption_scenario.period != -1:
-            raise ValueError('Cannot initialize RetirementAnalysis: consumption_scenario.period = {0}.'.format(self.target_consumption_scenario.period))
+            raise ValueError('Cannot initialize RetirementSimulation: consumption_scenario.period = {0}.'.format(self.target_consumption_scenario.period))
 
     def simulate(self):
         

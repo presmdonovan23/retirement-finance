@@ -1,9 +1,8 @@
 import unittest
-import numpy as np
 
 import refi.utils.constants
 import refi.utils.loaders
-import refi.retirement_analysis as rs
+import refi.retirement_simulation as rs
 
 
 # to run: python -m unittest test.test_portfolio
@@ -39,7 +38,7 @@ class RetirementSimTest(unittest.TestCase):
             self.glidepath
         )
 
-        ret_sim = rs.RetirementAnalysis(
+        ret_sim = rs.RetirementSimulation(
             initial_age=self.initial_age,
             retirement_age=self.retirement_age,
             death_age=self.death_age,
