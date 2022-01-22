@@ -10,6 +10,9 @@ class BaseSeries:
         self.value = np.nan
         self.period = -1
 
+    def initialize(self, **kwargs):
+        self.step(**kwargs)
+
     def plot(self, initial_age=None, name=None):
 
         xlabel = 'Period' if initial_age is None else 'Age'
