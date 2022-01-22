@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 
 import refi.utils.constants
 import refi.utils.loaders
@@ -94,6 +95,8 @@ class RetirementSimTest(unittest.TestCase):
         expected_balance = (ret_sim.portfolio.history[ind] - withdrawal) * (1 + pf_ret)
         ind = ret_sim.ind_at_ret + 11
         self.assertEqual(ret_sim.portfolio.history[ind], expected_balance)
+
+        self.assertTrue(~np.isnan(ret_sim.portfolio.history[-1]))
 
 
 if __name__ == '__main__':

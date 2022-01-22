@@ -42,20 +42,26 @@ class RetirementSimulation:
             raise ValueError('Cannot initialize RetirementSimulation: consumption_scenario.period = {0}.'.format(self.target_consumption_scenario.period))
 
     def simulate(self):
-        
+        self.initialize()
+
         for age in range(self.initial_age, self.death_age):
             self.period += 1
             self._step()
 
+    def initialize(self):
+        self.period += 1
+        self.portfolio.step()
+        self.inflation_scenario.step()
+        self.cpi_scenario.step()
+        self.deferral_scenario.step()
+        self.target_consumption_scenario.step()
+        self.ssb_scenario.step()
+
     def _step(self):
-        # TODO: consider initializing each scenario instead of requiring an awkward initialization here
-        # if we don't do this, then the initial period of the portfolio will include the deferral/withdrawal on step 0
-        if self.period == 0:
-            deposit_amt = 0
-            withdrawal_amt = 0
-        else:
-            deposit_amt = self.deferral_scenario.value
-            withdrawal_amt = self._get_withdrawal()
+
+        deposit_amt = self.deferral_scenario.value
+        withdrawal_amt = self._get_withdrawal()
+        self.portfolio.step(deposit_amt=deposit_amt, withdrawal_amt=withdrawal_amt)
 
         self.inflation_scenario.step()
         self.cpi_scenario.step()
@@ -63,7 +69,6 @@ class RetirementSimulation:
         self.target_consumption_scenario.step()
         self.ssb_scenario.step()
 
-        self.portfolio.step(deposit_amt=deposit_amt, withdrawal_amt=withdrawal_amt)
 
     def _get_withdrawal(self):
         target_withdrawal = self.target_consumption_scenario.value - self.ssb_scenario.value
