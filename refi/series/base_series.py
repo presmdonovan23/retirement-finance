@@ -3,15 +3,12 @@ import matplotlib.pyplot as plt
 
 
 class BaseSeries:
-    
+
     def __init__(self, num_periods):
         self.num_periods = num_periods
         self.history = np.array([np.nan for _ in range(self.num_periods)])
         self.value = np.nan
         self.period = -1
-
-    def initialize(self, **kwargs):
-        self.step(**kwargs)
 
     def plot(self, initial_age=None, name=None):
 
