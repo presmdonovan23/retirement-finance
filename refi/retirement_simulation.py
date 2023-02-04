@@ -82,3 +82,5 @@ class RetirementSimulation:
         self.deferral_scenario.plot(initial_age=self.initial_age, name='Deferral')
         self.target_consumption_scenario.plot(initial_age=self.initial_age, name='Consumption')
         self.ssb_scenario.plot(initial_age=self.initial_age, name='SSB')
+        
+        

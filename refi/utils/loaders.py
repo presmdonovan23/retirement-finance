@@ -39,7 +39,16 @@ def load_ret_sim_inputs(initial_age, retirement_age, death_age, benefits_age, as
     num_years = death_age - initial_age + 1
     equity, bond, cash = load_asset_series(num_years=num_years, pctile=asset_return_pctile)
     assets = [equity, bond, cash]
-    portfolio = pf.Portfolio(assets=assets, glidepath=glidepath, initial_balance=initial_balance)
+
+    years_needed = death_age - 25 + 1
+    gp_years = len(glidepath)
+    num_years_to_add = years_needed - gp_years
+    if num_years_to_add > 0:
+        glidepath += [glidepath[-1] for _ in range(num_years_to_add)]
+    
+    glidepath_subset = glidepath[(initial_age-25):(death_age-25+1)]
+
+    portfolio = pf.Portfolio(assets=assets, glidepath=glidepath_subset, initial_balance=initial_balance)
 
     inflation, cpi = load_inflation_series(num_years, initial_cpi)
     deferral, consumption, ssb = load_behavioral_series(
